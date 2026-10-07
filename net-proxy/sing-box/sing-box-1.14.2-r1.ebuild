@@ -607,7 +607,7 @@ pkg_setup() {
   CONFIG_CHECK="~TUN ~IP_ADVANCED_ROUTER ~IP_MULTIPLE_TABLES ~IPV6_MULTIPLE_TABLES"
  fi
  if use nftables; then
-  CONFIG_CHECK+=" ~NETFILTER ~NF_TABLES ~NF_TABLES_INET ~NF_CONNTRACK ~NF_NAT ~NFT_CT ~NFT_NAT ~NFT_REDIR"
+  CONFIG_CHECK+=" ~NETFILTER ~NF_TABLES ~NF_TABLES_INET ~NF_CONNTRACK ~NF_NAT ~NFT_CT ~NFT_NAT ~NFT_REDIR ~NF_CONNTRACK_MARK ~NFT_FIB_INET ~NFT_SOCKET ~NFT_TPROXY ~NFT_QUEUE ~NETFILTER_NETLINK_QUEUE"
  fi
  linux-info_pkg_setup
 }
@@ -624,9 +624,14 @@ src_install() {
  insinto /usr/share/sing-box
  doins "${FILESDIR}/kernel.config"
  dodoc LICENSE README.md
- dodir /etc/sing-box /var/lib/sing-box
+ keepdir /etc/sing-box /var/lib/sing-box
  fowners root:sing-box /etc/sing-box
  fperms 2770 /etc/sing-box
+ local marker
+ for marker in "${ED}"/etc/sing-box/.keep*; do
+  fowners root:sing-box "${marker#${ED}}"
+  fperms 0660 "${marker#${ED}}"
+ done
  fowners sing-box:sing-box /var/lib/sing-box
  fperms 0750 /var/lib/sing-box
  insinto /etc/sudoers.d

@@ -13,6 +13,7 @@ output_log="/var/log/sing-box.log"
 error_log="/var/log/sing-box.log"
 depend() { need net; }
 start_pre() {
+ checkpath -f -m 0600 -o sing-box:sing-box /var/log/sing-box.log
  if grep -Eq '"type"[[:space:]]*:[[:space:]]*"tun"' /etc/sing-box/config.json; then
   modprobe tun || return 1
  fi
