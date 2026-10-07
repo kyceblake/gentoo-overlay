@@ -1,6 +1,6 @@
 # gentoo-local
 
-Source-only Gentoo overlay for ClashTUI and sing-box, with OpenRC integration.
+Source-only Gentoo overlay for ClashTUI, sing-box and Mihomo, with OpenRC integration.
 Repository name: `gentoo-local`. Master repository: `gentoo`.
 
 ## Install the overlay
@@ -95,3 +95,20 @@ before using the service as an actual upstream proxy.
 
 Keep public SSH return traffic excluded from any future TUN routing policy.
 Do not enable global TUN routing remotely until that policy is validated.
+
+## Mihomo alternative
+
+Install `net-proxy/mihomo` for Clash-format subscriptions. The source build
+includes gVisor and disables EasyTier because upstream embeds prebuilt WASM.
+The OpenRC service runs as `mihomo`, reads `/etc/mihomo/config.yaml`, and stores
+state in `/var/lib/mihomo`. Add trusted administrators to the `mihomo` group.
+The package grants that group service start/stop/restart/status access.
+
+Set ClashTUI's Mihomo binary to `/usr/bin/mihomo`, configuration directory to
+`/etc/mihomo`, configuration file to `/etc/mihomo/config.yaml`, service name
+to `mihomo`, and service controller to `openrc`. Switch its core to Mihomo.
+Keep the API bound to loopback with a secret. TUN routing must be configured
+separately; do not run two proxy services on the same ports.
+
+For this ClashTUI snapshot, set `tun.stack: system` in the Mihomo override;
+its API parser does not recognize Mihomo's newer default `Mips` stack name.

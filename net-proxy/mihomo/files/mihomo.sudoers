@@ -1,0 +1,2 @@
+# Members may control only this network proxy service.
+%mihomo ALL=(root) NOPASSWD: /usr/bin/rc-service mihomo start, /usr/bin/rc-service mihomo stop, /usr/bin/rc-service mihomo restart, /usr/bin/rc-service mihomo status

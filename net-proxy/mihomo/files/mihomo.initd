@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+name="mihomo"
+description="mihomo proxy core"
+supervisor="supervise-daemon"
+command="/usr/bin/mihomo"
+command_args="-d /var/lib/mihomo -f /etc/mihomo/config.yaml"
+command_user="mihomo:mihomo"
+capabilities="^cap_net_admin,^cap_net_raw,^cap_net_bind_service"
+no_new_privs="yes"
+umask=0077
+export SAFE_PATHS="/etc/mihomo"
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/mihomo.log"
+error_log="/var/log/mihomo.log"
+depend() { need net; }
+start_pre() {
+ checkpath -f -m 0600 -o mihomo:mihomo /var/log/mihomo.log
+ modprobe tun || return 1
+ checkpath -d -m 0750 -o mihomo:mihomo /var/lib/mihomo
+ /usr/bin/mihomo -t -d /var/lib/mihomo -f /etc/mihomo/config.yaml || return 1
+}
