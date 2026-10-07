@@ -1,0 +1,104 @@
+--- a/src/config/core.rs
++++ b/src/config/core.rs
+@@ -87,7 +87,7 @@
+                     core_service: CoreServiceConfig {
+                         service_name: "clashtui_mihomo".into(),
+                         is_user: false,
+-                        service_controller: None,
++                        service_controller: Some("openrc".into()),
+                     },
+                 },
+                 singbox: SingboxSection {
+@@ -97,9 +97,9 @@
+                         config_path: format!("{base}/sing-box/config/config.json"),
+                     },
+                     core_service: CoreServiceConfig {
+-                        service_name: "clashtui_singbox".into(),
++                        service_name: "sing-box".into(),
+                         is_user: false,
+-                        service_controller: None,
++                        service_controller: Some("openrc".into()),
+                     },
+                 },
+                 timeout: Default::default(),
+@@ -117,19 +117,19 @@
+                 core_service: CoreServiceConfig {
+                     service_name: "clashtui_mihomo".into(),
+                     is_user: false,
+-                    service_controller: None,
++                    service_controller: Some("openrc".into()),
+                 },
+             },
+             singbox: SingboxSection {
+                 core: CoreConfig {
+-                    config_dir: "/opt/clashtui/sing-box/config".into(),
+-                    bin_path: "/opt/clashtui/sing-box/sing-box".into(),
+-                    config_path: "/opt/clashtui/sing-box/config/config.json".into(),
++                    config_dir: "/etc/sing-box".into(),
++                    bin_path: "/usr/bin/sing-box".into(),
++                    config_path: "/etc/sing-box/config.json".into(),
+                 },
+                 core_service: CoreServiceConfig {
+-                    service_name: "clashtui_singbox".into(),
++                    service_name: "sing-box".into(),
+                     is_user: false,
+-                    service_controller: None,
++                    service_controller: Some("openrc".into()),
+                 },
+             },
+             timeout: Default::default(),
+@@ -279,11 +279,11 @@
+         );
+         assert_eq!(cfg.mihomo.core_service.service_name, "clashtui_mihomo");
+         assert!(!cfg.mihomo.core_service.is_user);
+-        assert_eq!(cfg.singbox.core.bin_path, "/opt/clashtui/sing-box/sing-box");
+-        assert_eq!(cfg.singbox.core.config_dir, "/opt/clashtui/sing-box/config");
++        assert_eq!(cfg.singbox.core.bin_path, "/usr/bin/sing-box");
++        assert_eq!(cfg.singbox.core.config_dir, "/etc/sing-box");
+         assert_eq!(
+             cfg.singbox.core.config_path,
+-            "/opt/clashtui/sing-box/config/config.json"
++            "/etc/sing-box/config.json"
+         );
+         assert_eq!(cfg.singbox.core_service.service_name, "clashtui_singbox");
+         assert_eq!(cfg.timeout, Some(5));
+@@ -469,7 +469,7 @@
+     #[test]
+     fn service_controller_from_config_none_is_default() {
+         let csc = CoreServiceConfig {
+-            service_controller: None,
++            service_controller: Some("openrc".into()),
+             ..Default::default()
+         };
+         assert_eq!(
+@@ -636,11 +636,11 @@
+     #[test]
+     fn config_fixture_singbox_full() {
+         let cfg = load_config_fixture("sing-box/full.yaml");
+-        assert_eq!(cfg.singbox.core.config_dir, "/opt/clashtui/sing-box/config");
+-        assert_eq!(cfg.singbox.core.bin_path, "/opt/clashtui/sing-box/sing-box");
++        assert_eq!(cfg.singbox.core.config_dir, "/etc/sing-box");
++        assert_eq!(cfg.singbox.core.bin_path, "/usr/bin/sing-box");
+         assert_eq!(
+             cfg.singbox.core.config_path,
+-            "/opt/clashtui/sing-box/config/config.json"
++            "/etc/sing-box/config.json"
+         );
+         assert_eq!(cfg.singbox.core_service.service_name, "clashtui_singbox");
+         assert!(!cfg.singbox.core_service.is_user);
+--- a/src/cli/handler.rs
++++ b/src/cli/handler.rs
+@@ -191,11 +191,8 @@
+ 
+ // ── Update ───────────────────────────────────────────────────────────
+ 
+-fn handle_update(ci: bool, target: Target) -> Result<()> {
+-    match target {
+-        Target::Clashtui => update_clashtui(ci),
+-        Target::Mihomo => update_mihomo(ci),
+-    }
++fn handle_update(_ci: bool, _target: Target) -> Result<()> {
++    bail!("Binary updates disabled: update through Gentoo Portage")
+ }
+ 
+ fn update_clashtui(ci: bool) -> Result<()> {

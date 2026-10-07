@@ -1,0 +1,2 @@
+# Members may control only this network proxy service.
+%sing-box ALL=(root) NOPASSWD: /usr/bin/rc-service sing-box start, /usr/bin/rc-service sing-box stop, /usr/bin/rc-service sing-box restart, /usr/bin/rc-service sing-box status

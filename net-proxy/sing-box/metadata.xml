@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE pkgmetadata SYSTEM "https://www.gentoo.org/dtd/metadata.dtd">
+<pkgmetadata><use>
+<flag name="tor">Install Tor executable for Tor outbound support</flag>
+<flag name="tun">Check kernel TUN and policy routing support</flag>
+<flag name="nftables">Check kernel support for TUN auto_redirect</flag>
+<flag name="naive">Enable NaiveProxy; requires separately source-built libcronet.so</flag>
+</use></pkgmetadata>

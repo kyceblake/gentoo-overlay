@@ -1,0 +1,21 @@
+#!/sbin/openrc-run
+name="sing-box"
+description="sing-box proxy core"
+supervisor="supervise-daemon"
+command="/usr/bin/sing-box"
+command_args="run -D /var/lib/sing-box -c /etc/sing-box/config.json"
+command_user="sing-box:sing-box"
+capabilities="^cap_net_admin,^cap_net_raw,^cap_net_bind_service"
+no_new_privs="yes"
+umask=0077
+pidfile="/run/${RC_SVCNAME}.pid"
+output_log="/var/log/sing-box.log"
+error_log="/var/log/sing-box.log"
+depend() { need net; }
+start_pre() {
+ if grep -Eq '"type"[[:space:]]*:[[:space:]]*"tun"' /etc/sing-box/config.json; then
+  modprobe tun || return 1
+ fi
+ checkpath -d -m 0750 -o sing-box:sing-box /var/lib/sing-box
+ /usr/bin/sing-box check -c /etc/sing-box/config.json || return 1
+}
