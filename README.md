@@ -112,3 +112,9 @@ separately; do not run two proxy services on the same ports.
 
 For this ClashTUI snapshot, set `tun.stack: system` in the Mihomo override;
 its API parser does not recognize Mihomo's newer default `Mips` stack name.
+
+For Linux process rules while running as the dedicated service user, set
+`capabilities` in `/etc/conf.d/mihomo` to include `cap_sys_ptrace` and
+`cap_dac_read_search` in addition to the default network capabilities. These
+permit reading other users' process/socket links; grant them only when process
+routing is required. The init script respects this local override.
